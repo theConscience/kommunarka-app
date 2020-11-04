@@ -15,6 +15,7 @@
     "@nuxt/content": "^1.9.0",
     "@nuxtjs/axios": "^5.12.2",
     "core-js": "^3.6.5",
+    "normalize.css": "^8.0.1",
     "nuxt": "^2.14.6"
   },
   "devDependencies": {
@@ -31,6 +32,9 @@
     "prettier": "^2.1.2",
     "stylelint": "^13.7.2",
     "stylelint-config-prettier": "^8.0.2",
-    "stylelint-config-standard": "^20.0.0"
+    "stylelint-config-recommended": "^3.0.0",
+    "stylelint-config-standard": "^20.0.0",
+    "stylus": "^0.54.8",
+    "stylus-loader": "^4.2.0"
   }
 }

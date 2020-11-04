@@ -1,5 +1,6 @@
 <template>
-  <div class="container">
+  <Logo />
+  <!-- <div class="container">
     <div>
       <Logo />
       <h1 class="title">kommunarka-app</h1>
@@ -22,11 +23,15 @@
         </a>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>
-export default {}
+export default {
+  fetch({ redirect }) {
+    redirect('/search')
+  },
+}
 </script>
 
 <style>
