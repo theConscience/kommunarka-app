@@ -1,145 +1,241 @@
 <template>
   <main class="page page--search search">
     <h1 class="page__title">Поиск</h1>
-    <form action="" method="get" class="search__form search-form">
-      <div class="search-form__search">
+    <form
+      action=""
+      method="get"
+      class="search__form search-form"
+      :class="{ 'search-form--active': searchActive }"
+    >
+      <div
+        class="search-form__search"
+        :class="{ 'search-form__search--tip': searchActive && !searchQuery }"
+      >
         <input
-          type="text"
+          v-model="searchQuery"
+          type="search"
           class="search-form__query"
           placeholder="введите имя / фамилию"
           name="search"
+          @focus="enableSearch"
+          @input="$fetch"
         />
+        <!-- @input="filterData" -->
         <button
+          v-if="searchQuery"
           type="button"
           class="search-form__remove-last"
+          :class="{
+            'search-form__remove-last--disabled': searchQuery.length,
+          }"
           title="Удалить последний символ"
+          @click.prevent="searchActive ? removeLastFromQuery(null) : null"
+          @keyup.enter.space.prevent="
+            searchActive ? removeLastFromQuery(null) : null
+          "
         >
           Удалить
         </button>
       </div>
-      <ul class="search-form__filters">
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="/search?А">
-            А
-          </nuxt-link>
+      <ul class="search-form__keyboard">
+        <li v-for="(key, i) in keys" :key="key" class="search-form__key">
+          <a
+            class="search-form__key-link"
+            :class="{ 'search-form__key-link--active': filterKeyId === i }"
+            @click.prevent="
+              searchActive ? updateSearchQuery(key) : useFilter(i)
+            "
+            @keyup.enter.space.prevent="
+              searchActive ? updateSearchQuery(key) : useFilter(i)
+            "
+          >
+            <!-- href="`/search?${key}`" -->
+            {{ key }}
+          </a>
         </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="/search?Б">
-            Б
-          </nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="/search?В">
-            В
-          </nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="/search?Г">
-            Г
-          </nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="/search?Д">
-            Д
-          </nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="/search?Е">
-            Е
-          </nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Ë</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Ж</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">З</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">И</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Й</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">К</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Л</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">М</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Н</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">О</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">П</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Р</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">С</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Т</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">У</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Ф</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Х</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Ц</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Ч</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Ш</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Щ</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Ъ</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Ы</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Ь</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Э</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Ю</nuxt-link>
-        </li>
-        <li class="search-form__filter">
-          <nuxt-link class="search-form__filter-link" to="">Я</nuxt-link>
+        <li class="search-form__key">
+          <a
+            href=""
+            class="search-form__key-link search-form__key-link--space"
+            :class="{
+              'search-form__key-link--disabled':
+                !searchQuery || !searchQuery.length,
+            }"
+            @click.prevent="searchActive ? updateSearchQuery(' ') : null"
+            @keyup.enter.space.prevent="
+              searchActive ? updateSearchQuery(' ') : null
+            "
+          >
+            <!-- href="/search?_" -->
+          </a>
         </li>
       </ul>
+      <button
+        v-if="searchActive"
+        type="button"
+        title="Сбросить поиск"
+        class="search-form__clear"
+        @click="disableSearch"
+        @keyup.space.enter="disableSearch"
+      >
+        Сброс
+      </button>
     </form>
+    <ul class="results-list">
+      <template v-if="filteredVictims.length">
+        <li
+          v-for="(victim, id) in filteredVictims"
+          :key="victim.name + id"
+          class="results-list__item"
+        >
+          <nuxt-link :to="`/person/${id}`" class="results-list__link">{{
+            victim.name
+          }}</nuxt-link>
+        </li>
+      </template>
+      <template v-else>
+        <li
+          v-for="(victim, id) in victims"
+          :key="victim.name + id"
+          class="results-list__item"
+        >
+          <nuxt-link :to="`/person/${id}`" class="results-list__link">{{
+            victim.name
+          }}</nuxt-link>
+        </li>
+      </template>
+    </ul>
   </main>
 </template>
 
 <script>
+// import _ from 'lodash'
+
 export default {
+  async fetch() {
+    console.log('fetch called!')
+    const filter = this.defaultFilterKey
+    const searchFor = this.searchActive
+      ? this.searchQuery || filter.toUpperCase()
+      : filter.toUpperCase()
+    console.log('search for:', searchFor)
+    if (!this.searchActive) {
+      console.log('Search not active: Get data & filter by slug')
+      this.victims = await this.$content('victims')
+        // .only(['name', 'birthday'])
+        // .sortBy('name')
+        // .search('name', this.searchQuery || this.defaultFilterKey.toUpperCase())
+        // .where({ name: /^а/ })
+        // .where({ id: { $gt: 2 } })
+        .where({ slug: filter })
+        // .search('name', searchFor)
+        .fetch()
+    } else {
+      console.log('Search active: Get data by search string')
+      if (!this.victims.length) {
+        console.log('Make new request for data...')
+        this.victims = await this.$content('victims')
+          .where({
+            slug: this.searchQuery[0].toUpperCase(),
+          })
+          .search('name', this.searchQuery)
+          .fetch()
+      } else console.log('No content data requests...')
+    }
+  },
   data() {
     return {
-      searchSymbols: ['a'],
+      searchActive: false,
+      searchQuery: '',
+      filterKeyId: 0,
+      keys: [
+        'а',
+        'б',
+        'в',
+        'г',
+        'д',
+        'е',
+        'ё',
+        'ж',
+        'з',
+        'и',
+        'к',
+        'л',
+        'м',
+        'о',
+        'р',
+        'с',
+        'т',
+        'у',
+        'ф',
+        'х',
+        'ц',
+        'ч',
+        'ш',
+        'щ',
+        'ъ',
+        'ы',
+        'ь',
+        'э',
+        'ю',
+        'я',
+      ],
+      victims: [],
     }
+  },
+  // async asyncData({ $content, params }) {
+  //   const table = await $content(params)
+  //   return { table }
+  // },
+  computed: {
+    defaultFilterKey() {
+      return this.keys[this.filterKeyId]
+      // return 'd'
+    },
+    filteredVictims() {
+      return this.victims.filter((v) => v.name.includes(this.searchQuery))
+    },
+  },
+
+  watch: {
+    searchQuery(newVal, prevVal) {
+      console.log('search query changed!')
+      // this.filterData(newVal)
+      this.$fetch()
+    },
+  },
+
+  methods: {
+    enableSearch() {
+      console.log('enable search!')
+      this.searchActive = true
+    },
+    disableSearch() {
+      console.log('disable search!!')
+      this.searchActive = false
+    },
+    updateSearchQuery(key) {
+      console.log('update search query with key:', key)
+      if (key) {
+        const lastChar = this.searchQuery.slice(-1)
+        if (!lastChar || lastChar === ' ' || lastChar === '-')
+          this.searchQuery += key.toUpperCase()
+        else this.searchQuery += key
+      } else this.searchQuery = this.searchQuery.slice(0, -1)
+    },
+    removeLastFromQuery() {
+      console.log('remove last from query')
+      this.updateSearchQuery(null)
+    },
+    useFilter(keyId) {
+      console.log('use filter:', keyId)
+      this.filterKeyId = keyId
+      this.$fetch()
+    },
+    // filterData(key) {
+    //   console.log('filter data with key:', key)
+    //   this.$fetch()
+    // },
   },
 }
 </script>
@@ -152,11 +248,33 @@ export default {
     background-color: $black
 
   .search-form
+    position: relative
+    margin-bottom: $form_bottom
+
+  .search-form--active
     //
 
   .search-form__search
     position: relative
     margin-bottom: $search_bottom
+
+  .search-form__search--tip
+    &::after
+      content: 'Искать'
+      font-family: $f_mono
+      font-size: 2.25rem
+      position: absolute
+      right: 20px
+      top: 0
+      bottom: 0
+      width: auto
+      height: $unitX3
+      margin: auto
+      text-transform: uppercase
+      text-decoration: none
+      color: $white
+      opacity: 0.5
+
 
   $double_offset = $from_side * 2
   .search-form__query  // input[type=text]
@@ -170,6 +288,11 @@ export default {
     // padding-right: 20px
     border: 2px solid $white
     background-color: $transparent
+    color: $white
+
+    &:hover,
+    &:focus
+      outline: none
 
   .search-form__remove-last
     position: absolute
@@ -186,19 +309,83 @@ export default {
     border: none
     opacity: 0.3
 
-  .search-form__filters // ul
+  .search-form__remove-last--disabled
+    opacity: 1
+
+  .search-form__keyboard // ul
     list-style: none
     display: flex
     flex-flow: row nowrap
     justify-content: space-between
-    padding 0
-    margin 0
+    padding: 0
+    margin: 0
 
-  .search-form__filter // li
+  .search-form__key // li
     display: inline-block
 
-  .search-form__filter-link
+  .search-form__key-link
+    display: block
     font-size: 2rem
     color: $white
     text-decoration: none
+    text-transform: uppercase
+
+  .search-form__key-link--space
+    position: relative
+    width: $unitX3
+    height: $unitX3
+
+    &::before
+      content: ''
+      position: absolute
+      top: 0
+      left: 0
+      width: $unitX3
+      height: $unitX3
+      background-image: url('~assets/img/i-space.svg')
+      background-size: contain
+      background-position: center
+      background-repeat: no-repeat
+
+
+  .search-form__key-link--active
+    border-bottom: 2px solid $white
+
+  .search-form__key-link--disabled
+    opacity: 0.5
+
+  .search-form__clear
+    position: absolute
+    right: 0
+    bottom: -1 * $unitX6 * 2
+    width: $unitX6
+    height: $unitX6
+    background-image: url('~assets/img/i-close.svg')
+    background-repeat: no-repeat
+    background-position: center
+    background-size: contain
+    background-color: $transparent
+    border-width: 0
+    text-indent: -9999px
+
+  .results-list
+    padding: 0
+    margin: 0
+    list-style: none
+    display: flex
+    flex-flow: column wrap
+
+  .results-list__item
+    display: inline-block
+
+  .results-list__link
+    font-size: 1.625rem // 26px
+    line-height: 1.33333 // 36px
+    display: block
+    color: $white
+    text-decoration: none
+
+    &:hover,
+    &:focus
+      text-decoration: underline
 </style>

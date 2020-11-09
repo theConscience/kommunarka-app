@@ -45,7 +45,10 @@ export default {
   axios: {},
 
   // Content module configuration (https://go.nuxtjs.dev/config-content)
-  content: {},
+  content: {
+    nestedProperties: ['victims.id'],
+    fullTextSearchFields: ['name'],
+  },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {},

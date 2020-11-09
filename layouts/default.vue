@@ -13,6 +13,19 @@ export default {
   components: {
     NavBar,
   },
+  mounted() {
+    document.addEventListener('contextmenu', this.onContextMenuAction)
+  },
+  beforeDestroy() {
+    document.removeEventListener('contextmenu', this.onContextMenuAction)
+  },
+  methods: {
+    // DISABLE RIGHT CLICK CONTEXT MENU
+    onContextMenuAction(evt) {
+      console.warn('User tried to open context menu')
+      evt.preventDefault()
+    },
+  },
 }
 </script>
 
