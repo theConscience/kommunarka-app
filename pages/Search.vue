@@ -85,7 +85,7 @@
       <template v-if="filteredVictims.length">
         <li
           v-for="(victim, id) in filteredVictims"
-          :key="victim.name + id"
+          :key="'f_' + victim.name + id"
           class="results-list__item"
         >
           <nuxt-link :to="`/person/${id}`" class="results-list__link">{{
@@ -95,8 +95,8 @@
       </template>
       <template v-else>
         <li
-          v-for="(victim, id) in victims"
-          :key="victim.name + id"
+          v-for="(victim, id) in selectedVictims"
+          :key="'s_' + victim.name + id"
           class="results-list__item"
         >
           <nuxt-link :to="`/person/${id}`" class="results-list__link">{{
@@ -114,33 +114,60 @@
 export default {
   async fetch() {
     console.log('fetch called!')
-    const filter = this.defaultFilterKey
-    const searchFor = this.searchActive
-      ? this.searchQuery || filter.toUpperCase()
-      : filter.toUpperCase()
-    console.log('search for:', searchFor)
+    const filter = this.activeFilterKey
     if (!this.searchActive) {
       console.log('Search not active: Get data & filter by slug')
-      this.victims = await this.$content('victims')
-        // .only(['name', 'birthday'])
-        // .sortBy('name')
-        // .search('name', this.searchQuery || this.defaultFilterKey.toUpperCase())
-        // .where({ name: /^а/ })
-        // .where({ id: { $gt: 2 } })
-        .where({ slug: filter })
-        // .search('name', searchFor)
-        .fetch()
+      console.log('Filter by:', filter)
+      if (!filter) return
+      // if (!this.victims[filter]) this.victims[filter] = []
+      if (!this.victims[filter]) this.$set(this.victims, filter, [])
+      const victimsGroup = this.victims[filter]
+      console.log(`victims in group '${filter}' are: ${victimsGroup}`)
+      if (!victimsGroup.length) {
+        console.log('Make new request for data...')
+        this.victims[filter] = await this.$content('victims')
+          // .only(['name', 'birthday'])
+          // .sortBy('name')
+          // .search('name', this.searchQuery || this.activeFilterKey.toUpperCase())
+          // .where({ name: /^а/ })
+          // .where({ id: { $gt: 2 } })
+          .where({ slug: filter })
+          // .search('name', searchFor)
+          .fetch()
+
+        console.log(
+          `victims for group '${filter}' are loaded:`,
+          this.victims[filter]
+        )
+      } else console.log('Victims for this group already loaded!')
     } else {
       console.log('Search active: Get data by search string')
-      if (!this.victims.length) {
+      console.log('Search by:', this.searchQuery)
+      if (!this.searchQuery.length) return
+      // if (!this.victims[this.searchQuery[0]])
+      //   this.victims[this.searchQuery[0]] = []
+      if (!this.victims[this.searchQuery[0]])
+        this.$set(this.victims, this.searchQuery[0], [])
+      const victimsGroup = this.victims[this.searchQuery[0]]
+      console.log(
+        `victims in group '${this.searchQuery[0]}' are: ${victimsGroup}`
+      )
+      if (!victimsGroup.length) {
         console.log('Make new request for data...')
-        this.victims = await this.$content('victims')
+        this.victims[this.searchQuery[0].toLowerCase()] = await this.$content(
+          'victims'
+        )
           .where({
-            slug: this.searchQuery[0].toUpperCase(),
+            slug: this.searchQuery[0].toLowerCase(),
           })
           .search('name', this.searchQuery)
           .fetch()
-      } else console.log('No content data requests...')
+
+        console.log(
+          `victims for group '${this.searchQuery[0]}' are loaded:`,
+          this.victims[this.searchQuery[0]]
+        )
+      } else console.log('Victims for this group already loaded!')
     }
   },
   data() {
@@ -180,7 +207,38 @@ export default {
         'ю',
         'я',
       ],
-      victims: [],
+      victims: {
+        // а: [],
+        // б: [],
+        // в: [],
+        // г: [],
+        // д: [],
+        // е: [],
+        // ё: [],
+        // ж: [],
+        // з: [],
+        // и: [],
+        // к: [],
+        // л: [],
+        // м: [],
+        // о: [],
+        // р: [],
+        // с: [],
+        // т: [],
+        // у: [],
+        // ф: [],
+        // х: [],
+        // ц: [],
+        // ч: [],
+        // ш: [],
+        // щ: [],
+        // ъ: [],
+        // ы: [],
+        // ь: [],
+        // э: [],
+        // ю: [],
+        // я: [],
+      },
     }
   },
   // async asyncData({ $content, params }) {
@@ -188,12 +246,16 @@ export default {
   //   return { table }
   // },
   computed: {
-    defaultFilterKey() {
+    activeFilterKey() {
       return this.keys[this.filterKeyId]
-      // return 'd'
+    },
+    selectedVictims() {
+      return this.victims[this.activeFilterKey]
     },
     filteredVictims() {
-      return this.victims.filter((v) => v.name.includes(this.searchQuery))
+      return this.selectedVictims
+        ? this.selectedVictims.filter((v) => v.name.includes(this.searchQuery))
+        : []
     },
   },
 
