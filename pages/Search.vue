@@ -400,6 +400,7 @@ export default {
     text-indent: -9999px
 
   .results-list
+    font-family: $f_garamond
     padding: 0
     margin: 0
     list-style: none
@@ -411,7 +412,8 @@ export default {
 
   .results-list__link
     font-size: 1.625rem // 26px
-    line-height: 1.33333 // 36px
+    // font-size: 1.5rem // 24px
+    line-height: 1.385 // 36px | 26px / 36px = 1.385
     display: block
     color: $white
     text-decoration: none
