@@ -162,6 +162,7 @@
 
 <script>
 // import _ from 'lodash'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   async fetch() {
@@ -171,13 +172,12 @@ export default {
       console.log('Search not active: Get data & filter by slug')
       console.log('Filter by:', filter)
       if (!filter) return
-      // if (!this.victims[filter]) this.victims[filter] = []
-      if (!this.victims[filter]) this.$set(this.victims, filter, [])
+      if (!this.victims[filter]) this.setVictimsGroup([filter, []])
       const victimsGroup = this.victims[filter]
       console.log(`victims in group '${filter}' are: ${victimsGroup}`)
       if (!victimsGroup.length) {
         console.log('Make new request for data...')
-        this.victims[filter] = await this.$content('victims')
+        const loadedVictimsGroup = await this.$content('victims')
           // .only(['name', 'birthday'])
           // .sortBy('name')
           // .search('name', this.searchQuery || this.activeFilterKey.toUpperCase())
@@ -186,6 +186,8 @@ export default {
           .where({ slug: filter })
           // .search('name', searchFor)
           .fetch()
+
+        this.setVictimsGroup([filter, loadedVictimsGroup])
 
         console.log(
           `victims for group '${filter}' are loaded:`,
@@ -196,28 +198,24 @@ export default {
       console.log('Search active: Get data by search string')
       console.log('Search by:', this.searchQuery)
       if (!this.searchQuery.length) return
-      // if (!this.victims[this.searchQuery[0]])
-      //   this.victims[this.searchQuery[0]] = []
-      if (!this.victims[this.searchQuery[0]])
-        this.$set(this.victims, this.searchQuery[0], [])
-      const victimsGroup = this.victims[this.searchQuery[0]]
-      console.log(
-        `victims in group '${this.searchQuery[0]}' are: ${victimsGroup}`
-      )
+      const groupName = this.searchQuery[0].toLowerCase()
+      if (!this.victims[groupName]) this.setVictimsGroup([groupName, []])
+      const victimsGroup = this.victims[groupName]
+      console.log(`victims in group '${groupName}' are: ${victimsGroup}`)
       if (!victimsGroup.length) {
         console.log('Make new request for data...')
-        this.victims[this.searchQuery[0].toLowerCase()] = await this.$content(
-          'victims'
-        )
+        const loadedVictimsGroup = await this.$content('victims')
           .where({
-            slug: this.searchQuery[0].toLowerCase(),
+            slug: groupName,
           })
           .search('name', this.searchQuery)
           .fetch()
 
+        this.setVictimsGroup([groupName, loadedVictimsGroup])
+
         console.log(
-          `victims for group '${this.searchQuery[0]}' are loaded:`,
-          this.victims[this.searchQuery[0]]
+          `victims for group '${groupName}' are loaded:`,
+          this.victims[groupName]
         )
       } else console.log('Victims for this group already loaded!')
     }
@@ -262,7 +260,7 @@ export default {
         'ю',
         'я',
       ],
-      victims: {},
+      // victims: {},
       victimsListHeight: 1164, // default UL height
       victimItemHeight: 36, // default LI height
       columnsOnPage: 2, // default columns count
@@ -275,6 +273,7 @@ export default {
   //   return { table }
   // },
   computed: {
+    ...mapState('victims', ['victims']),
     activeFilterKey() {
       return this.keys[this.filterKeyId]
     },
@@ -345,6 +344,7 @@ export default {
   // },
 
   methods: {
+    ...mapActions('victims', ['setVictimsGroup']),
     enableSearch() {
       console.log('enable search!')
       this.searchActive = true
