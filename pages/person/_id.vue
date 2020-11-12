@@ -152,8 +152,8 @@ export default {
     align-items: flex-start
     justify-content: space-between
     width: 100%
-    // margin-left: - $unitX1_5
-    // margin-right: - $unitX1_5
+    // margin-left: - $rw_unitX1_5
+    // margin-right: - $rw_unitX1_5
 
   .profile__col
     display: flex
@@ -162,7 +162,7 @@ export default {
     flex-basis: 50%
     align-items: stretch
     width: 50%
-    padding: $unitX1_5
+    padding: $rh_unitX1_5 $rw_unitX1_5
 
   .profile__col--first
     padding-left: 0
@@ -175,7 +175,7 @@ export default {
     font-size: 3.75rem // 60px
     line-height: 1
     margin: 0
-    margin-bottom: $unitX2
+    margin-bottom: $rh_unitX2
 
   .profile__bio
     font-family: $f_garamond
@@ -189,7 +189,7 @@ export default {
     line-height: 1.2    // 36px
     list-style: none
     text-align: right
-    margin-bottom: $unitX3
+    margin-bottom: $rh_unitX3
 
   .profile__info-part
     //

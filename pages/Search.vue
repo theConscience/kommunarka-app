@@ -441,11 +441,11 @@ export default {
       font-family: $f_mono
       font-size: 2.25rem
       position: absolute
-      right: 20px
+      right: $rw_unitX1_666
       top: 0
       bottom: 0
       width: auto
-      height: $unitX3
+      height: $rh_unitX3
       margin: auto
       text-transform: uppercase
       text-decoration: none
@@ -456,11 +456,11 @@ export default {
   .search-form__query  // input[type=text]
     // box-sizing: content-box
     // width: 'calc(100% - %s)' % $double_offset
-    // width: 'calc(100% - %s)' % $unitX5
+    // width: 'calc(100% - %s)' % $rw_unitX5
     font-size: 1.75rem
     width: 100%
-    height: $unitX6
-    padding-left: 20px
+    height: $rh_unitX6
+    padding-left: $rw_unitX1_666
     // padding-right: 20px
     border: $bd_min solid $white
     background-color: $transparent
@@ -474,8 +474,8 @@ export default {
     position: absolute
     top: 0
     right: 0
-    width: $unitX6
-    height: $unitX6
+    width: $rw_unitX6
+    height: $rh_unitX6
     background-color: $transparent
     background-image: url('~assets/img/i-remove.svg')
     background-repeat: no-repeat
@@ -519,14 +519,14 @@ export default {
         content: ''
         position: absolute
         left: 0
-        bottom: $unit_half
+        bottom: $rh_unit_half
         height: $bd_min
         width: 100%
         background-color: $white
 
   .search-form__key-link--space
-    width: $unitX3
-    height: $unitX3
+    width: $rw_unitX3
+    height: $rh_unitX3
     outline: none
 
     &::before
@@ -534,8 +534,8 @@ export default {
       position: absolute
       top: 0
       left: 0
-      width: $unitX3
-      height: $unitX3
+      width: $rw_unitX3
+      height: $rh_unitX3
       background-image: url('~assets/img/i-space.svg')
       background-size: contain
       background-position: center
@@ -544,8 +544,8 @@ export default {
     &:hover::before,
     &:focus::before
       bottom: auto
-      width: $unitX3
-      height: $unitX3
+      width: $rw_unitX3
+      height: $rh_unitX3
       background-color: $transparent
 
 
@@ -561,7 +561,7 @@ export default {
       content: ''
       position: absolute
       left: 0
-      bottom: $unit_half
+      bottom: $rh_unit_half
       height: $bd_min
       width: 100%
       background-color: $white
@@ -573,9 +573,9 @@ export default {
   .search-form__clear
     position: absolute
     right: 0
-    bottom: -1 * $unitX6 * 2
-    width: $unitX6
-    height: $unitX6
+    bottom: -1 * $rh_unitX6 * 2
+    width: $rw_unitX6
+    height: $rh_unitX6
     background-image: url('~assets/img/i-close.svg')
     background-repeat: no-repeat
     background-position: center
@@ -644,8 +644,8 @@ export default {
     position: relative
     display: block
     font-size: 2rem
-    padding-left: $unit_half
-    padding-right: $unit_half
+    padding-left: $rw_unit_half
+    padding-right: $rw_unit_half
     color: $white
     text-decoration: none
     text-transform: uppercase
@@ -660,7 +660,7 @@ export default {
         position: absolute
         left: 0
         right: 0
-        bottom: $unit_half
+        bottom: $rh_unit_half
         height: $bd_min
         width: 60%
         margin: 0 auto
@@ -679,7 +679,7 @@ export default {
       position: absolute
       left: 0
       right: 0
-      bottom: $unit_half
+      bottom: $rh_unit_half
       height: $bd_min
       width: 60%
       margin: 0 auto
@@ -702,10 +702,10 @@ export default {
     cursor: pointer
 
   .pagination__btn--prev
-    margin-right: $unit
+    margin-right: $rw_unit
 
   .pagination__btn--next
-    margin-left: $unit
+    margin-left: $rw_unit
     transform: rotate(180deg)
 
   .pagination__btn--disabled
