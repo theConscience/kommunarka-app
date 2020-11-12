@@ -4,6 +4,7 @@
     <nuxt-link to="/search" class="page__link page__link--back">
       Назад к поиску
     </nuxt-link>
+    <h1>Личное дело №{{ id }}</h1>
   </main>
 </template>
 
@@ -19,6 +20,27 @@ export default {
         img: '',
         title: '',
       },
+    }
+  },
+  id() {
+    return this.$route.params.id
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.$nuxt.$loading.start()
+      setTimeout(() => this.$nuxt.$loading.finish(), 500)
+    })
+  },
+  head() {
+    return {
+      title: 'личное дело #' + this.id,
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: 'Личное дело #' + this.id,
+        },
+      ],
     }
   },
 }

@@ -4,17 +4,26 @@ export default {
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
-    title: 'kommunarka-app',
+    titleTemplate: 'Музей истории ГУЛАГа: Коммунарка / %s',
+    // title: 'Музей истории ГУЛАГа: Коммунарка',
     meta: [
       { charset: 'utf-8' },
       {
         name: 'viewport',
         content: 'width=device-width, initial-scale=1, user-scalable=no',
       },
-      { hid: 'description', name: 'description', content: '' },
+      {
+        hid: 'description',
+        name: 'description',
+        content:
+          'Сайт, посвящённый жертвам сталинских репрессий, погибшим на расстрельном полигоне в Коммунарке',
+      },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
+
+  // Customize the progress-bar color
+  loading: { color: '#fff', height: '4px' },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
   css: ['normalize.css', '@/assets/stylus/main.styl'],

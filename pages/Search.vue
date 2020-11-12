@@ -20,13 +20,12 @@
           @focus="enableSearch"
           @input="$fetch"
         />
-        <!-- @input="filterData" -->
         <button
           v-if="searchQuery"
           type="button"
           class="search-form__remove-last"
           :class="{
-            'search-form__remove-last--disabled': searchQuery.length,
+            'search-form__remove-last--enabled': searchQuery.length,
           }"
           title="Удалить последний символ"
           @click.prevent="searchActive ? removeLastFromQuery(null) : null"
@@ -81,10 +80,15 @@
         Сброс
       </button>
     </form>
-    <ul class="results-list">
-      <template v-if="filteredVictims.length">
+    <ul
+      ref="results-list"
+      class="results-list"
+      :class="[`results-list--page-${currentPage}`]"
+    >
+      <!-- <template v-if="selectedGroupVictimsFiltered.length"> -->
+      <template v-if="searchActive">
         <li
-          v-for="(victim, id) in filteredVictims"
+          v-for="(victim, id) in selectedGroupVictimsForPageFiltered"
           :key="'f_' + victim.name + id"
           class="results-list__item"
         >
@@ -95,7 +99,7 @@
       </template>
       <template v-else>
         <li
-          v-for="(victim, id) in selectedVictims"
+          v-for="(victim, id) in selectedGroupVictimsForPage"
           :key="'s_' + victim.name + id"
           class="results-list__item"
         >
@@ -105,6 +109,54 @@
         </li>
       </template>
     </ul>
+    <!-- <results-list
+      ref="results-list"
+      :class="[`results-list--page-${currentPage}`]"
+      :first-or-second="searchActive"
+      :first-list="selectedGroupVictimsForPageFiltered"
+      :second-list="selectedGroupVictimsForPage"
+    ></results-list> -->
+
+    <footer class="page__footer">
+      <div v-if="pagesCount > 1" class="pagination">
+        <button
+          class="pagination__btn pagination__btn--prev"
+          :class="{ 'pagination__btn--disabled': currentPage === 1 }"
+          @click="currentPage > 1 ? currentPage-- : false"
+          @keyup.enter.space="currentPage > 1 ? currentPage-- : false"
+        >
+          Назад
+        </button>
+        <ul class="pagination__pages">
+          <li
+            v-for="pageNum in pagesCount"
+            :key="pageNum"
+            class="pagination__page"
+          >
+            <a
+              :href="`?page=${pageNum}`"
+              class="pagination__page-link"
+              :class="{
+                'pagination__page-link--active': pageNum === currentPage,
+              }"
+              :title="`На страницу ${pageNum}`"
+              @click.prevent="currentPage = pageNum"
+              @keyup.enter.space.prevent="currentPage = pageNum"
+            >
+              {{ pageNum }}
+            </a>
+          </li>
+        </ul>
+        <button
+          class="pagination__btn pagination__btn--next"
+          :class="{ 'pagination__btn--disabled': currentPage === pagesCount }"
+          @click="currentPage < pagesCount ? currentPage++ : false"
+          @keyup.enter.space="currentPage < pagesCount ? currentPage++ : false"
+        >
+          Вперёд
+        </button>
+      </div>
+    </footer>
   </main>
 </template>
 
@@ -172,6 +224,9 @@ export default {
   },
   data() {
     return {
+      isClient: !!process.client,
+      updateTimerCount: 0,
+      updateTimerCountMax: 20,
       searchActive: false,
       searchQuery: '',
       filterKeyId: 0,
@@ -208,6 +263,11 @@ export default {
         'я',
       ],
       victims: {},
+      victimsListHeight: 1164, // default UL height
+      victimItemHeight: 36, // default LI height
+      columnsOnPage: 2, // default columns count
+      victimsPerPage: 64, // (1164 / 36) * 2, // 64
+      currentPage: 1,
     }
   },
   // async asyncData({ $content, params }) {
@@ -218,23 +278,71 @@ export default {
     activeFilterKey() {
       return this.keys[this.filterKeyId]
     },
-    selectedVictims() {
-      return this.victims[this.activeFilterKey]
+    selectedGroupVictims() {
+      return this.victims[this.activeFilterKey] || []
     },
-    filteredVictims() {
-      return this.selectedVictims
-        ? this.selectedVictims.filter((v) => v.name.includes(this.searchQuery))
+    selectedGroupVictimsCount() {
+      return this.selectedGroupVictims.length
+    },
+    selectedGroupVictimsFiltered() {
+      // if (!this.searchQuery) return []
+      return this.selectedGroupVictims
+        ? this.selectedGroupVictims.filter((v) =>
+            v.name.includes(this.searchQuery)
+          )
         : []
+    },
+    pagesCountForGroup() {
+      // return 9 || Math.ceil(this.selectedGroupVictimsCount / this.victimsPerPage)
+      return Math.ceil(this.selectedGroupVictimsCount / this.victimsPerPage)
+    },
+    pagesCountForFiltered() {
+      // return 9 || Math.ceil(this.selectedGroupVictimsFiltered / this.victimsPerPage)
+      return Math.ceil(this.selectedGroupVictimsFiltered / this.victimsPerPage)
+    },
+    pagesCount() {
+      return this.searchQuery
+        ? this.pagesCountForFiltered
+        : this.pagesCountForGroup
+    },
+    selectedGroupVictimsForPage() {
+      return this.selectedGroupVictims.slice(
+        this.victimsPerPage * (this.currentPage - 1),
+        this.victimsPerPage * this.currentPage
+      )
+    },
+    selectedGroupVictimsForPageFiltered() {
+      return this.selectedGroupVictimsFiltered.slice(
+        this.victimsPerPage * (this.currentPage - 1),
+        this.victimsPerPage * this.currentPage
+      )
     },
   },
 
   watch: {
     searchQuery(newVal, prevVal) {
       console.log('search query changed!')
-      // this.filterData(newVal)
       this.$fetch()
     },
+    pagesCount(newVal, prevVal) {
+      console.log('pages count changed!')
+      this.currentPage = 1
+    },
   },
+
+  mounted() {
+    this.$nextTick(() => {
+      this.$nuxt.$loading.start()
+      setTimeout(() => this.$nuxt.$loading.finish(), 500)
+    })
+    if (this.isClient) {
+      console.warn('This is client, updating victims count')
+      this.updateVictimsPerPage()
+    } else console.warn('This is server! no getComputedProperty!')
+  },
+  // updated() {
+  //   this.updateVictimsPerPage()
+  // },
 
   methods: {
     enableSearch() {
@@ -243,6 +351,7 @@ export default {
     },
     disableSearch() {
       console.log('disable search!!')
+      this.searchQuery = ''
       this.searchActive = false
     },
     updateSearchQuery(key) {
@@ -263,10 +372,47 @@ export default {
       this.filterKeyId = keyId
       this.$fetch()
     },
-    // filterData(key) {
-    //   console.log('filter data with key:', key)
-    //   this.$fetch()
-    // },
+    updateVictimsPerPage(timer) {
+      // console.log('updateVictimsPerPage() called!')
+      const resultsListEl = this.$refs['results-list']
+      const resultsListItemEl = resultsListEl.firstElementChild
+      if (resultsListEl && resultsListItemEl) {
+        // console.warn('elements found, removing timer, resetting height')
+        clearTimeout(timer)
+        this.victimsListHeight = Math.floor(
+          parseFloat(getComputedStyle(resultsListEl).height, 10)
+        )
+        this.victimItemHeight = Math.floor(
+          parseFloat(getComputedStyle(resultsListItemEl).height, 10)
+        )
+        this.victimsPerPage =
+          (this.victimsListHeight / this.victimItemHeight) * this.columnsOnPage
+      } else {
+        console.log('No elements, checking after 300ms...')
+        if (this.updateTimerCount === this.updateTimerCountMax) {
+          console.warn('Timer reached maximum, stopping timer')
+          clearTimeout(timer)
+        } else {
+          timer = setTimeout(() => {
+            this.updateTimerCount++
+            // MEMO: RECURSION!
+            this.updateVictimsPerPage(timer)
+          }, 300)
+        }
+      }
+    },
+  },
+  head() {
+    return {
+      title: 'коммунарка, поиск',
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: 'Поиск репрессированных в коммунарке',
+        },
+      ],
+    }
   },
 }
 </script>
@@ -306,7 +452,6 @@ export default {
       color: $white
       opacity: 0.5
 
-
   $double_offset = $from_side * 2
   .search-form__query  // input[type=text]
     // box-sizing: content-box
@@ -317,7 +462,7 @@ export default {
     height: $unitX6
     padding-left: 20px
     // padding-right: 20px
-    border: 2px solid $white
+    border: $bd_min solid $white
     background-color: $transparent
     color: $white
 
@@ -339,8 +484,11 @@ export default {
     text-indent: -9999px
     border: none
     opacity: 0.3
+    outline: none
+    cursor: pointer
+    transition: opacity 0.3s ease-in
 
-  .search-form__remove-last--disabled
+  .search-form__remove-last--enabled
     opacity: 1
 
   .search-form__keyboard // ul
@@ -354,17 +502,32 @@ export default {
   .search-form__key // li
     display: inline-block
 
-  .search-form__key-link
+  .search-form__key-link // a
+    position: relative
     display: block
     font-size: 2rem
     color: $white
     text-decoration: none
     text-transform: uppercase
+    cursor: pointer
+
+    &:hover,
+    &:focus
+      cursor: pointer
+
+      &::before
+        content: ''
+        position: absolute
+        left: 0
+        bottom: $unit_half
+        height: $bd_min
+        width: 100%
+        background-color: $white
 
   .search-form__key-link--space
-    position: relative
     width: $unitX3
     height: $unitX3
+    outline: none
 
     &::before
       content: ''
@@ -378,12 +541,34 @@ export default {
       background-position: center
       background-repeat: no-repeat
 
+    &:hover::before,
+    &:focus::before
+      bottom: auto
+      width: $unitX3
+      height: $unitX3
+      background-color: $transparent
+
 
   .search-form__key-link--active
-    border-bottom: 2px solid $white
+    cursor: default
+    // border-bottom: $bd_min solid $white
+
+    &:hover,
+    &:focus
+      cursor: default
+
+    &::before
+      content: ''
+      position: absolute
+      left: 0
+      bottom: $unit_half
+      height: $bd_min
+      width: 100%
+      background-color: $white
 
   .search-form__key-link--disabled
     opacity: 0.5
+    cursor: default
 
   .search-form__clear
     position: absolute
@@ -398,17 +583,31 @@ export default {
     background-color: $transparent
     border-width: 0
     text-indent: -9999px
+    cursor: pointer
+    outline: none
+    opacity: 0.75
+    transition: opacity 0.3s ease-in
+
+    &:hover,
+    &:focus
+      opacity: 1
+
 
   .results-list
     font-family: $f_garamond
-    padding: 0
-    margin: 0
+    overflow: hidden
     list-style: none
     display: flex
     flex-flow: column wrap
+    // width: 50%
+    height: $results_list_height
+    padding: 0
+    margin: 0
+    margin-bottom: $results_list_bottom
 
   .results-list__item
-    display: inline-block
+    // display: inline-block
+    width: 50%
 
   .results-list__link
     font-size: 1.625rem // 26px
@@ -421,4 +620,95 @@ export default {
     &:hover,
     &:focus
       text-decoration: underline
+
+  .pagination
+    display: flex
+    flex-flow: row nowrap
+    justify-content: flex-start
+    align-items: center
+
+  .pagination__pages // ul
+    font-family: $f_mono
+    font-size: 2rem // 32px
+    line-height: 1.2 // auto
+    list-style: none
+    display: flex
+    flex-flow: row nowrap
+    padding: 0
+    margin: 0
+
+  .pagination__page // li
+    //
+
+  .pagination__page-link // a
+    position: relative
+    display: block
+    font-size: 2rem
+    padding-left: $unit_half
+    padding-right: $unit_half
+    color: $white
+    text-decoration: none
+    text-transform: uppercase
+    cursor: pointer
+
+    &:hover,
+    &:focus
+      cursor: pointer
+
+      &::before
+        content: ''
+        position: absolute
+        left: 0
+        right: 0
+        bottom: $unit_half
+        height: $bd_min
+        width: 60%
+        margin: 0 auto
+        background-color: $white
+
+  .pagination__page-link--active
+    cursor: default
+    // border-bottom: $bd_min solid $white
+
+    &:hover,
+    &:focus
+      cursor: default
+
+    &::before
+      content: ''
+      position: absolute
+      left: 0
+      right: 0
+      bottom: $unit_half
+      height: $bd_min
+      width: 60%
+      margin: 0 auto
+      background-color: $white
+
+  .pagination__btn
+    display: inline-block
+    width: $arrow_width
+    height: $arrow_height
+    margin-bottom: 4px
+    border-width: 0
+    color: $white
+    background-color: $transparent
+    background-image: url('~assets/img/i-arrow-left.svg')
+    background-repeat: no-repeat
+    background-position: center
+    background-size: contain
+    outline: none
+    text-indent: -9999px
+    cursor: pointer
+
+  .pagination__btn--prev
+    margin-right: $unit
+
+  .pagination__btn--next
+    margin-left: $unit
+    transform: rotate(180deg)
+
+  .pagination__btn--disabled
+    opacity: 0.5
+    cursor: default
 </style>
