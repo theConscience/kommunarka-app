@@ -22,7 +22,7 @@
             </li>
           </ul>
           <img
-            :src="`/media/${currentPerson.img}`"
+            :src="`/kommunarka-app/media/${currentPerson.img}`"
             :alt="currentPerson.title"
             class="profile__img img-responsive"
           />
