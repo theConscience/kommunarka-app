@@ -173,6 +173,7 @@ export default {
   .profile__name // h1
     font-family: $f_garamond
     font-size: 3.75rem // 60px
+    font-weight: 200
     line-height: 1
     margin: 0
     margin-bottom: $rh_unitX2

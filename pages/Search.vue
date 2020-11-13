@@ -460,6 +460,7 @@ export default {
     font-size: 1.75rem
     width: 100%
     height: $rh_unitX6
+    min-height: $unitX3
     padding-left: $rw_unitX1_666
     // padding-right: 20px
     border: $bd_min solid $white
