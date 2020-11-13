@@ -439,7 +439,8 @@ export default {
     &::after
       content: 'Искать'
       font-family: $f_mono
-      font-size: 2.25rem
+      font-size: 1.875rem // 30px
+      line-height: 1
       position: absolute
       right: $rw_unitX1_666
       top: 0
@@ -451,6 +452,9 @@ export default {
       text-decoration: none
       color: $white
       opacity: 0.5
+
+      @media screen and (min-width: 500px)
+        font-size: 2.25rem // 36px
 
   $double_offset = $from_side * 2
   .search-form__query  // input[type=text]
@@ -467,6 +471,9 @@ export default {
     background-color: $transparent
     color: $white
 
+    @media screen and (min-width: 600px)
+      border: $bd_default solid $white
+
     &:hover,
     &:focus
       outline: none
@@ -477,6 +484,7 @@ export default {
     right: 0
     width: $rw_unitX6
     height: $rh_unitX6
+    min-height: $unitX3
     background-color: $transparent
     background-image: url('~assets/img/i-remove.svg')
     background-repeat: no-repeat
@@ -525,6 +533,9 @@ export default {
         width: 100%
         background-color: $white
 
+        @media screen and (min-width: 600px)
+          height: $bd_default
+
   .search-form__key-link--space
     width: $rw_unitX3
     height: $rh_unitX3
@@ -567,6 +578,9 @@ export default {
       width: 100%
       background-color: $white
 
+      @media screen and (min-width: 600px)
+        height: $bd_default
+
   .search-form__key-link--disabled
     opacity: 0.5
     cursor: default
@@ -602,6 +616,7 @@ export default {
     flex-flow: column wrap
     // width: 50%
     height: $results_list_height
+    min-width: 100%
     padding: 0
     margin: 0
     margin-bottom: $results_list_bottom
@@ -667,6 +682,9 @@ export default {
         margin: 0 auto
         background-color: $white
 
+        @media screen and (min-width: 600px)
+          height: $bd_default
+
   .pagination__page-link--active
     cursor: default
     // border-bottom: $bd_min solid $white
@@ -685,6 +703,9 @@ export default {
       width: 60%
       margin: 0 auto
       background-color: $white
+
+      @media screen and (min-width: 600px)
+        height: $bd_default
 
   .pagination__btn
     display: inline-block
