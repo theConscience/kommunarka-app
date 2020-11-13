@@ -2,11 +2,6 @@ export default {
   // Target (https://go.nuxtjs.dev/config-target)
   target: 'static',
 
-  // Router config
-  router: {
-    base: '/kommunarka-app/',
-  },
-
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
     titleTemplate: 'Музей истории ГУЛАГа: Коммунарка / %s',
