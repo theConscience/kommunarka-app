@@ -161,6 +161,7 @@
 </template>
 
 <script>
+/* eslint-disable no-console */
 // import _ from 'lodash'
 import { mapState, mapActions } from 'vuex'
 

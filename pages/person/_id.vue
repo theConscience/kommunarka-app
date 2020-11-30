@@ -37,6 +37,7 @@
 </template>
 
 <script>
+/* eslint-disable no-console */
 import { mapState, mapActions } from 'vuex'
 
 export default {
@@ -113,6 +114,9 @@ export default {
       setTimeout(() => this.$nuxt.$loading.finish(), 500)
     })
   },
+  methods: {
+    ...mapActions('victims', ['setVictim', 'setVictimsGroup']),
+  },
   head() {
     return {
       title: 'личное дело #' + this.personalNumber,
@@ -124,9 +128,6 @@ export default {
         },
       ],
     }
-  },
-  methods: {
-    ...mapActions('victims', ['setVictim', 'setVictimsGroup']),
   },
   // beforeRouteLeave(to, from, next) {
   //   if (to.name === 'search') {

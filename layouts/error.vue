@@ -8,7 +8,12 @@
 
 <script>
 export default {
-  props: ['error'],
+  props: {
+    error: {
+      type: String,
+      default: '',
+    },
+  },
   layout: 'default', // you can set a custom layout for the error page
 }
 </script>
