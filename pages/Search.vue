@@ -12,13 +12,13 @@
         :class="{ 'search-form__search--tip': searchActive && !searchQuery }"
       >
         <input
-          v-model="searchQuery"
+          :value="searchQuery"
           type="search"
           class="search-form__query"
           placeholder="введите имя / фамилию"
           name="search"
-          @focus="enableSearch"
-          @input="$fetch"
+          @focus="startSearch"
+          @input="onInputUpdate"
         />
         <button
           v-if="searchQuery"
@@ -74,15 +74,15 @@
         type="button"
         title="Сбросить поиск"
         class="search-form__clear"
-        @click="disableSearch"
-        @keyup.space.enter="disableSearch"
+        @click="stopSearch"
+        @keyup.space.enter="stopSearch"
       >
         Сброс
       </button>
     </form>
     <ul
       ref="results-list"
-      class="results-list"
+      class="search__results results-list"
       :class="[`results-list--page-${currentPage}`]"
     >
       <!-- <template v-if="selectedGroupVictimsFiltered.length"> -->
@@ -167,7 +167,7 @@ import { mapState, mapActions } from 'vuex'
 
 export default {
   async fetch() {
-    console.log('fetch called!')
+    console.log('fetch called with evt:')
     const filter = this.activeFilterKey
     if (!this.searchActive) {
       console.log('Search not active: Get data & filter by slug')
@@ -226,9 +226,9 @@ export default {
       isClient: !!process.client,
       updateTimerCount: 0,
       updateTimerCountMax: 20,
-      searchActive: false,
-      searchQuery: '',
-      filterKeyId: 0,
+      // searchActive: false,
+      // searchQuery: '',
+      // filterKeyId: 0,
       keys: [
         'а',
         'б',
@@ -277,6 +277,7 @@ export default {
   //   return { table }
   // },
   computed: {
+    ...mapState('search', ['searchActive', 'searchQuery', 'filterKeyId']),
     ...mapState('victims', ['victims']),
     activeFilterKey() {
       return this.keys[this.filterKeyId]
@@ -323,7 +324,7 @@ export default {
   },
 
   watch: {
-    searchQuery(newVal, prevVal) {
+    search_query(newVal, prevVal) {
       console.log('search query changed!')
       this.$fetch()
     },
@@ -348,24 +349,42 @@ export default {
   // },
 
   methods: {
+    ...mapActions('search', [
+      'enableSearch',
+      'disableSearch',
+      'setSearchQuery',
+      'resetSearchQuery',
+      'setFilterKeyId',
+      'resetFilterKeyId',
+    ]),
     ...mapActions('victims', ['setVictimsGroup']),
-    enableSearch() {
-      console.log('enable search!')
-      this.searchActive = true
+    async onInputUpdate($evt) {
+      await this.setSearchQuery($evt.target.value)
+      this.$fetch()
     },
-    disableSearch() {
+    startSearch() {
+      console.log('enable search!')
+      // this.searchActive = true
+      this.enableSearch()
+    },
+    stopSearch() {
       console.log('disable search!!')
-      this.searchQuery = ''
-      this.searchActive = false
+      // this.searchQuery = ''
+      this.resetSearchQuery()
+      // this.searchActive = false
+      this.disableSearch()
     },
     updateSearchQuery(key) {
       console.log('update search query with key:', key)
       if (key) {
         const lastChar = this.searchQuery.slice(-1)
         if (!lastChar || lastChar === ' ' || lastChar === '-')
-          this.searchQuery += key.toUpperCase()
-        else this.searchQuery += key
-      } else this.searchQuery = this.searchQuery.slice(0, -1)
+          // this.searchQuery += key.toUpperCase()
+          this.setSearchQuery(this.searchQuery + key.toUpperCase())
+        // else this.searchQuery += key
+        else this.setSearchQuery(this.searchQuery + key)
+        // } else this.searchQuery = this.searchQuery.slice(0, -1)
+      } else this.setSearchQuery(this.searchQuery.slice(0, -1))
     },
     removeLastFromQuery() {
       console.log('remove last from query')
@@ -373,7 +392,9 @@ export default {
     },
     useFilter(keyId) {
       console.log('use filter:', keyId)
-      this.filterKeyId = keyId
+      // this.filterKeyId = keyId
+      this.setFilterKeyId(keyId)
+      this.$fetch()
       this.$fetch()
     },
     updateVictimsPerPage(timer) {
@@ -428,9 +449,12 @@ export default {
   .search
     background-color: $black
 
-  .search-form
-    position: relative
+  .search__form
     margin-bottom: $form_bottom
+    position: relative
+
+  .search-form
+    //
 
   .search-form--active
     //
@@ -612,6 +636,10 @@ export default {
       opacity: 1
 
 
+  .search__results
+    margin: 0
+    margin-bottom: $results_list_bottom
+
   .results-list
     font-family: $f_garamond
     overflow: hidden
@@ -622,8 +650,6 @@ export default {
     height: $results_list_height
     min-width: 100%
     padding: 0
-    margin: 0
-    margin-bottom: $results_list_bottom
 
   .results-list__item
     // display: inline-block
