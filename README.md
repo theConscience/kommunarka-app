@@ -1,5 +1,49 @@
 # kommunarka-app
 
+
+## Инструкция по запуску
+```bash
+# Установить Nodejs
+https://nodejs.org/download/release/v13.8.0/
+
+# Перезагрузить компьютер и проверить в консоли cmd следующие команды:
+node --version  # должно быть 13.8.0
+npm --version   # должно быть > 6.0.0
+
+# Установить Git For Windows (для систем с ОС Windows)
+https://git-scm.com/download/win
+
+# Cоздать папку где всё будет храниться, перейти в неё
+mkdir projects && cd projects/  # например так...
+
+# Cклонировать репозиторий с github:
+git clone https://github.com/theConscience/kommunarka-app.git
+
+# Перейти в папку проекта:
+cd kommunarka-app/
+
+# Перед первым включением установить nodejs зависимости:
+npm i
+
+# И положить правильные картинки в папку
+kommunarka-app/static/media/
+
+# Запустить приложение в режиме SPA (одностраничного приложения)
+npm run dev
+```
+
+
+## Инструкция по обновлению расстрельных списков
+**При обновлении все старые данные будут удалены, и целиком заменены на новые!**
+- выгрузить victims.csv файл из последней версии [google-таблицы](https://docs.google.com/spreadsheets/d/1iF2WbN2jLQgHxKTZsfT5lu9T00dCZxsbL0lZuO1340U/edit?usp=sharing
+)
+- положить файл в корень проекта `kommunarka-app/`
+```bash
+# Запустить в консоли команду
+npm run updateDb
+```
+
+
 ## Build Setup
 
 ```bash
