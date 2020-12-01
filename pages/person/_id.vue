@@ -99,13 +99,16 @@ export default {
       return this.allVictims.find((v) => v.id === this.id)
     },
     currentPersonDeathDate() {
-      return this.currentPerson.death
-        .split('/')
-        .map((d, i, arr) => {
-          if (i === arr.length - 1) return '19' + d
-          return d
-        })
-        .join('.')
+      return (
+        this.currentPerson.death
+          // .split('/')
+          .split('.')
+          .map((d, i, arr) => {
+            if (i === arr.length - 1 && d.length === 2) return '19' + d
+            return d
+          })
+          .join('.')
+      )
     },
   },
   mounted() {

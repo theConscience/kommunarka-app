@@ -89,10 +89,10 @@
       <template v-if="searchActive">
         <li
           v-for="(victim, id) in selectedGroupVictimsForPageFiltered"
-          :key="'f_' + victim.name + id"
+          :key="'f_' + victim.name + victim.id + '_' + id"
           class="results-list__item"
         >
-          <nuxt-link :to="`/person/${id}`" class="results-list__link">{{
+          <nuxt-link :to="`/person/${victim.id}`" class="results-list__link">{{
             victim.name
           }}</nuxt-link>
         </li>
@@ -103,7 +103,7 @@
           :key="'s_' + victim.name + id"
           class="results-list__item"
         >
-          <nuxt-link :to="`/person/${id}`" class="results-list__link">{{
+          <nuxt-link :to="`/person/${victim.id}`" class="results-list__link">{{
             victim.name
           }}</nuxt-link>
         </li>
