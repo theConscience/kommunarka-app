@@ -10,7 +10,7 @@ https://nodejs.org/download/release/v13.8.0/
 node --version  # должно быть 13.8.0
 npm --version   # должно быть > 6.0.0
 
-# Установить Git For Windows (для систем с ОС Windows)
+# Установить Git Scm (для систем с ОС Windows)
 https://git-scm.com/download/win
 
 # Cоздать папку где всё будет храниться, перейти в неё
