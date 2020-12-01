@@ -10,8 +10,8 @@
 export default {
   props: {
     error: {
-      type: String,
-      default: '',
+      type: Object,
+      default: () => {},
     },
   },
   layout: 'default', // you can set a custom layout for the error page
