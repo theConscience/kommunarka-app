@@ -58,7 +58,7 @@ export default {
       this.disableSearch()
       this.resetSearchQuery()
       this.resetFilterKeyId()
-      window.$nuxt.$router.push('/Search')
+      window.$nuxt.$router.push('/search')
     },
   },
 }
