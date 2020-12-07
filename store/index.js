@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-export const state = {
+export const state = () => ({
   idle_time: 0,
-}
+})
 
 export const mutations = {
   UPDATE_IDLE_TIME(state, newIdleTime) {

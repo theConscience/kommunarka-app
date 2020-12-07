@@ -47,6 +47,8 @@ export default {
   // },
   async fetch() {
     console.log('fetch called!')
+    console.log('this.allVictims.length:', this.allVictims.length)
+    console.log('this.currentPerson:', this.currentPerson)
     if (!this.currentPerson) {
       console.log(
         `no person data loaded, making an API call where ID: ${this.id}`
@@ -70,7 +72,7 @@ export default {
           .fetch()
         this.setVictimsGroup([victimGroup, allVictimsGroup])
       } else console.warn('Victim not found in API!')
-    }
+    } else console.warn('Got person! Do nothing :)')
   },
   data() {
     return {
